@@ -1,0 +1,19 @@
+# Exclude unnecessary files from Railway deployment
+
+.git
+.github
+.gitignore
+.env
+.env.local
+.env.*.local
+node_modules/
+dist/
+.DS_Store
+*.log
+*.swp
+*.swo
+*~
+.vscode
+.idea
+README.md
+DEPLOYMENT.md
