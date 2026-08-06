@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "PortfolioGen",
+  "description": "A conversational portfolio builder. Answer a few plain questions about your work and get back publishable pages, a print version and reusable text — structured, written, designed and quality-checked by a staged agent pipeline.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
