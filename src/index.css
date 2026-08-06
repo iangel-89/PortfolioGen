@@ -1,1 +1,188 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+/*
+  Semantic colour tokens.
+
+  Everything in the interface refers to a role — canvas, surface, ink, accent —
+  never to a literal colour. The two blocks below are the only place a hex value
+  appears, so the whole application re-themes from here.
+
+  The application has to meet the standard it enforces: every pair below clears
+  WCAG 2.2 AA at its intended size.
+*/
+:root {
+  color-scheme: light dark;
+
+  --c-canvas: #faf8f4;
+  --c-surface: #ffffff;
+  --c-surface-sunken: #f2efe8;
+  --c-ink: #1c1a17;
+  --c-ink-muted: #5b564d;
+  --c-ink-faint: #7d776c;
+  --c-line: #ded8cc;
+  --c-line-strong: #c3bbaa;
+  --c-accent: #1f5140;
+  --c-accent-hover: #17402f;
+  --c-accent-ink: #ffffff;
+  --c-accent-wash: #e6efe9;
+  --c-warn: #7a4a05;
+  --c-warn-wash: #fbf1de;
+  --c-shadow: 28 26 23;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-canvas: #14150f;
+    --c-surface: #1c1e17;
+    --c-surface-sunken: #24261e;
+    --c-ink: #f2f0e9;
+    --c-ink-muted: #b9b5a8;
+    --c-ink-faint: #918c80;
+    --c-line: #333527;
+    --c-line-strong: #4a4c3c;
+    --c-accent: #8fd0ac;
+    --c-accent-hover: #a8dcbe;
+    --c-accent-ink: #10231a;
+    --c-accent-wash: #1e2a22;
+    --c-warn: #f0c483;
+    --c-warn-wash: #2b2418;
+    --c-shadow: 0 0 0;
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-sunken: var(--c-surface-sunken);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-ink-muted);
+  --color-faint: var(--c-ink-faint);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-accent: var(--c-accent);
+  --color-accent-hover: var(--c-accent-hover);
+  --color-accent-ink: var(--c-accent-ink);
+  --color-accent-wash: var(--c-accent-wash);
+  --color-warn: var(--c-warn);
+  --color-warn-wash: var(--c-warn-wash);
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--c-canvas);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Never remove the focus ring; make it good instead. */
+  :focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  ::selection {
+    background: var(--c-accent-wash);
+    color: var(--c-ink);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .balance {
+    text-wrap: balance;
+  }
+
+  /* Reading measure — the same 45–75 character rule the method enforces downstream. */
+  .measure {
+    max-width: 68ch;
+  }
+
+  .card-shadow {
+    box-shadow:
+      0 1px 2px rgb(var(--c-shadow) / 0.04),
+      0 8px 24px -12px rgb(var(--c-shadow) / 0.12);
+  }
+
+  .scrollbar-slim {
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-line-strong) transparent;
+  }
+}
+
+/* Motion */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.34s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.animate-fade {
+  animation: fade 0.4s ease both;
+}
+.animate-sweep {
+  animation: sweep 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
