@@ -1,0 +1,349 @@
+<title>Mapa de Orquestación MEP-7</title>
+<style>
+  :root{
+    --bg:#ffffff; --page:#fdfdfc; --ink:#16181a; --ink-2:#4d5157; --faint:#767c82;
+    --line:#d9dbdc; --line-strong:#b7bbbd;
+    --agent-fill:#ffffff; --agent-line:#1d4e6b;
+    --router-fill:#eef3f6; --router-line:#4d5157;
+    --blocking-fill:#fbeaea; --blocking-line:#a3312e;
+    --terminal-fill:#1d4e6b; --terminal-ink:#ffffff;
+    --retry:#8a8f94; --retry-blocking:#a3312e; --retry-directed:#6a4c93; --escalate:#b06a1e;
+    --band:#f6f6f4;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15171a; --page:#1b1e22; --ink:#eef0f1; --ink-2:#b6bbc0; --faint:#8a9096;
+      --line:#33383d; --line-strong:#454b51;
+      --agent-fill:#1f2328; --agent-line:#5b9bc4;
+      --router-fill:#232a30; --router-line:#b6bbc0;
+      --blocking-fill:#3a2224; --blocking-line:#e08a86;
+      --terminal-fill:#5b9bc4; --terminal-ink:#0c1114;
+      --retry:#8a9096; --retry-blocking:#e08a86; --retry-directed:#b79ce0; --escalate:#e0a869;
+      --band:#20242a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15171a; --page:#1b1e22; --ink:#eef0f1; --ink-2:#b6bbc0; --faint:#8a9096;
+    --line:#33383d; --line-strong:#454b51;
+    --agent-fill:#1f2328; --agent-line:#5b9bc4;
+    --router-fill:#232a30; --router-line:#b6bbc0;
+    --blocking-fill:#3a2224; --blocking-line:#e08a86;
+    --terminal-fill:#5b9bc4; --terminal-ink:#0c1114;
+    --retry:#8a9096; --retry-blocking:#e08a86; --retry-directed:#b79ce0; --escalate:#e0a869;
+    --band:#20242a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Georgia,'Times New Roman',serif;padding:24px 12px 48px}
+  .wrap{max-width:1400px;margin:0 auto}
+  h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:-0.01em}
+  .sub{color:var(--ink-2);margin:0 0 20px;font-size:0.95rem}
+  .page{
+    background:var(--page);
+    border:1px solid var(--line);
+    border-radius:6px;
+    box-shadow:0 1px 3px rgba(0,0,0,.08);
+    aspect-ratio:11/8.5;
+    width:100%;
+    padding:22px 26px 14px;
+    display:flex;
+    flex-direction:column;
+  }
+  .page h2{font-size:1.05rem;margin:0 0 2px;text-align:center;letter-spacing:0.02em}
+  .page .caption{text-align:center;color:var(--ink-2);font-size:0.8rem;margin:0 0 8px}
+  svg{width:100%;height:auto;flex:1;overflow:visible}
+  text{font-family:'Segoe UI',Helvetica,Arial,sans-serif;fill:var(--ink)}
+  .node-title{font-weight:700;font-size:15px}
+  .node-sub{font-size:11.5px;fill:var(--ink-2)}
+  .phase-title{font-size:13px;font-weight:700;letter-spacing:.03em;fill:var(--ink-2);text-transform:uppercase}
+  .edge-label{font-size:11px;fill:var(--ink-2)}
+  .edge-label-strong{font-size:11.5px;font-weight:700}
+  .legend{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:6px 18px;
+    font-size:11.5px; color:var(--ink-2); margin-top:6px; padding-top:8px; border-top:1px solid var(--line);
+  }
+  .legend .item{display:flex;align-items:center;gap:6px}
+  .swatch{width:22px;height:12px;flex:none;border-radius:2px}
+  .below{max-width:1400px;margin:20px auto 0;color:var(--ink-2);font-size:0.9rem;line-height:1.6}
+  .below strong{color:var(--ink)}
+  code, pre{font-family:'SF Mono',Consolas,monospace}
+  pre{background:var(--band);border:1px solid var(--line);border-radius:6px;padding:14px 16px;font-size:12.5px;overflow-x:auto;color:var(--ink)}
+  .hint{font-size:0.85rem;color:var(--faint);margin-top:6px}
+  @media print{
+    body{padding:0}
+    .below,h1,.sub{display:none}
+    .page{box-shadow:none;border:none;aspect-ratio:auto;width:11in;height:8.5in}
+    @page{size:landscape}
+  }
+</style>
+
+<div class="wrap">
+  <h1>Mapa de orquestación — método MEP-7</h1>
+  <p class="sub">Página horizontal proporción carta (11&nbsp;×&nbsp;8.5in) — lista para capturar o imprimir a PDF y pegar en Word.</p>
+
+  <div class="page" id="capture-page">
+    <h2>PortfolioGen — Pipeline de 16 etapas, 7 fases</h2>
+    <p class="caption">Cadena principal de izquierda a derecha · los arcos punteados debajo muestran los retrocesos (retry) que cada enrutador puede ordenar</p>
+
+    <svg viewBox="0 0 2280 1040" role="img" aria-label="Diagrama de flujo mostrando las 16 etapas del pipeline de PortfolioGen agrupadas en 7 fases, con arcos de reintento desde cada enrutador hacia la etapa que debe corregir el problema, y un arco de escalamiento desde el enrutador de calidad final hacia la entrega.">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+        <marker id="arrowRetry" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--retry)"/>
+        </marker>
+        <marker id="arrowRetryBlock" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--retry-blocking)"/>
+        </marker>
+        <marker id="arrowDirected" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--retry-directed)"/>
+        </marker>
+        <marker id="arrowEscalate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--escalate)"/>
+        </marker>
+      </defs>
+
+      <!-- ===== Phase bands ===== -->
+      <g>
+        <rect x="210" y="415" width="346" height="145" rx="8" fill="var(--band)" stroke="var(--line)"/>
+        <text x="383" y="402" text-anchor="middle" class="phase-title">Fase 1 · Encontrar el ángulo</text>
+
+        <rect x="562" y="415" width="232" height="145" rx="8" fill="var(--band)" stroke="var(--line)"/>
+        <text x="678" y="402" text-anchor="middle" class="phase-title">Fase 2 · Elegir qué mostrar</text>
+
+        <rect x="804" y="415" width="232" height="145" rx="8" fill="var(--band)" stroke="var(--line)"/>
+        <text x="920" y="402" text-anchor="middle" class="phase-title">Fase 3 · Escribir los casos</text>
+
+        <rect x="1046" y="415" width="232" height="145" rx="8" fill="var(--band)" stroke="var(--line)"/>
+        <text x="1162" y="402" text-anchor="middle" class="phase-title">Fase 4 · Ordenar para el lector</text>
+
+        <rect x="1288" y="415" width="232" height="145" rx="8" fill="var(--band)" stroke="var(--line)"/>
+        <text x="1404" y="402" text-anchor="middle" class="phase-title">Fase 5 · Diseñar el look</text>
+
+        <rect x="1530" y="415" width="232" height="145" rx="8" fill="var(--band)" stroke="var(--line)"/>
+        <text x="1646" y="402" text-anchor="middle" class="phase-title">Fase 6 · Construir los archivos</text>
+
+        <rect x="1772" y="415" width="346" height="145" rx="8" fill="var(--band)" stroke="var(--line)"/>
+        <text x="1945" y="402" text-anchor="middle" class="phase-title">Fase 7 · Verificar todo</text>
+      </g>
+
+      <!-- ===== Main chain forward arrows (drawn first, under nodes) ===== -->
+      <g stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.85">
+        <line x1="180" y1="460" x2="220" y2="460" marker-end="url(#arrow)"/>
+        <line x1="320" y1="460" x2="336" y2="460" marker-end="url(#arrow)"/>
+        <line x1="436" y1="460" x2="452" y2="460" marker-end="url(#arrow)"/>
+        <line x1="552" y1="460" x2="568" y2="460" marker-end="url(#arrow)"/>
+        <line x1="668" y1="460" x2="684" y2="460" marker-end="url(#arrow)"/>
+        <line x1="784" y1="460" x2="800" y2="460" marker-end="url(#arrow)"/>
+        <line x1="900" y1="460" x2="916" y2="460" marker-end="url(#arrow)"/>
+        <line x1="1016" y1="460" x2="1032" y2="460" marker-end="url(#arrow)"/>
+        <line x1="1132" y1="460" x2="1148" y2="460" marker-end="url(#arrow)"/>
+        <line x1="1248" y1="460" x2="1264" y2="460" marker-end="url(#arrow)"/>
+        <line x1="1364" y1="460" x2="1380" y2="460" marker-end="url(#arrow)"/>
+        <line x1="1480" y1="460" x2="1496" y2="460" marker-end="url(#arrow)"/>
+        <line x1="1596" y1="460" x2="1612" y2="460" marker-end="url(#arrow)"/>
+        <line x1="1712" y1="460" x2="1728" y2="460" marker-end="url(#arrow)"/>
+        <line x1="1828" y1="460" x2="1844" y2="460" marker-end="url(#arrow)"/>
+        <line x1="1944" y1="460" x2="1960" y2="460" marker-end="url(#arrow)"/>
+        <line x1="2060" y1="460" x2="2100" y2="460" marker-end="url(#arrow)"/>
+      </g>
+
+      <!-- ===== Retry arcs (below main row) ===== -->
+      <g fill="none">
+        <!-- R1 -> A1 : swap test fails -->
+        <path d="M502,492 C502,555 386,555 386,492" stroke="var(--retry)" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#arrowRetry)"/>
+        <text x="444" y="575" text-anchor="middle" class="edge-label">retry · tesis no pasa la prueba de intercambio</text>
+
+        <!-- R2 -> A2 -->
+        <path d="M734,492 C734,555 618,555 618,492" stroke="var(--retry)" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#arrowRetry)"/>
+        <text x="676" y="575" text-anchor="middle" class="edge-label">retry · evidencia mal recortada</text>
+
+        <!-- R3 -> A3 (BLOCKING) -->
+        <path d="M966,492 C966,555 850,555 850,492" stroke="var(--retry-blocking)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrowRetryBlock)"/>
+        <text x="908" y="575" text-anchor="middle" class="edge-label" fill="var(--retry-blocking)">retry BLOQUEANTE · veracidad / confidencialidad</text>
+
+        <!-- R5 -> A5 (BLOCKING) -->
+        <path d="M1430,492 C1430,555 1314,555 1314,492" stroke="var(--retry-blocking)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrowRetryBlock)"/>
+        <text x="1372" y="575" text-anchor="middle" class="edge-label" fill="var(--retry-blocking)">retry BLOQUEANTE · contraste / tipografía</text>
+
+        <!-- R7 -> any earlier stage (directed, long arc) -->
+        <path d="M1894,492 C1894,650 386,650 386,492" stroke="var(--retry-directed)" stroke-width="2" stroke-dasharray="9 5" marker-end="url(#arrowDirected)"/>
+        <text x="1140" y="672" text-anchor="middle" class="edge-label-strong" fill="var(--retry-directed)">retry dirigido · a la etapa responsable del hallazgo (máx. 2 rondas)</text>
+
+        <!-- R7 -> Delivery : escalate -->
+        <path d="M1894,428 C1894,330 2170,330 2170,428" stroke="var(--escalate)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrowEscalate)"/>
+        <text x="2032" y="318" text-anchor="middle" class="edge-label" fill="var(--escalate)">escalar tras 2 rondas → mensaje en lenguaje llano</text>
+      </g>
+
+      <!-- ===== Terminal: start ===== -->
+      <g>
+        <rect x="30" y="428" width="150" height="64" rx="10" fill="var(--terminal-fill)"/>
+        <text x="105" y="454" text-anchor="middle" fill="var(--terminal-ink)" class="node-title" font-size="13">Agente 0</text>
+        <text x="105" y="470" text-anchor="middle" fill="var(--terminal-ink)" class="node-sub" font-size="11" opacity="0.9">Entrevistador (chat)</text>
+        <text x="105" y="484" text-anchor="middle" fill="var(--terminal-ink)" class="node-sub" font-size="10" opacity="0.75">recopila, no diseña</text>
+      </g>
+
+      <!-- ===== 16 pipeline stage nodes ===== -->
+      <!-- helper grid: agent box = --agent-fill / --agent-line ; router = --router-fill/--router-line ; blocking = --blocking-fill/--blocking-line -->
+
+      <!-- R0 Intake gate -->
+      <g>
+        <rect x="220" y="428" width="100" height="64" rx="8" fill="var(--router-fill)" stroke="var(--router-line)" stroke-width="1.4"/>
+        <text x="270" y="452" text-anchor="middle" class="node-title" font-size="12.5">Router 0</text>
+        <text x="270" y="467" text-anchor="middle" class="node-sub">Intake gate</text>
+        <text x="270" y="480" text-anchor="middle" class="node-sub" font-size="10">¿modo estándar?</text>
+      </g>
+
+      <!-- A1 Strategist -->
+      <g>
+        <rect x="336" y="428" width="100" height="64" rx="8" fill="var(--agent-fill)" stroke="var(--agent-line)" stroke-width="1.6"/>
+        <text x="386" y="452" text-anchor="middle" class="node-title" font-size="12.5">Agente 1</text>
+        <text x="386" y="467" text-anchor="middle" class="node-sub">Strategist</text>
+        <text x="386" y="480" text-anchor="middle" class="node-sub" font-size="10">tesis + 3 takeaways</text>
+      </g>
+
+      <!-- R1 Strategy gate -->
+      <g>
+        <rect x="452" y="428" width="100" height="64" rx="8" fill="var(--router-fill)" stroke="var(--router-line)" stroke-width="1.4"/>
+        <text x="502" y="452" text-anchor="middle" class="node-title" font-size="12.5">Router 1</text>
+        <text x="502" y="467" text-anchor="middle" class="node-sub">Strategy gate</text>
+        <text x="502" y="480" text-anchor="middle" class="node-sub" font-size="10">swap test</text>
+      </g>
+
+      <!-- A2 Curator -->
+      <g>
+        <rect x="568" y="428" width="100" height="64" rx="8" fill="var(--agent-fill)" stroke="var(--agent-line)" stroke-width="1.6"/>
+        <text x="618" y="452" text-anchor="middle" class="node-title" font-size="12.5">Agente 2</text>
+        <text x="618" y="467" text-anchor="middle" class="node-sub">Curator</text>
+        <text x="618" y="480" text-anchor="middle" class="node-sub" font-size="10">puntúa y selecciona</text>
+      </g>
+
+      <!-- R2 Evidence gate -->
+      <g>
+        <rect x="684" y="428" width="100" height="64" rx="8" fill="var(--router-fill)" stroke="var(--router-line)" stroke-width="1.4"/>
+        <text x="734" y="452" text-anchor="middle" class="node-title" font-size="12.5">Router 2</text>
+        <text x="734" y="467" text-anchor="middle" class="node-sub">Evidence gate</text>
+        <text x="734" y="480" text-anchor="middle" class="node-sub" font-size="10">fija el modo</text>
+      </g>
+
+      <!-- A3 Narrator -->
+      <g>
+        <rect x="800" y="428" width="100" height="64" rx="8" fill="var(--agent-fill)" stroke="var(--agent-line)" stroke-width="1.6"/>
+        <text x="850" y="452" text-anchor="middle" class="node-title" font-size="12.5">Agente 3</text>
+        <text x="850" y="467" text-anchor="middle" class="node-sub">Narrator</text>
+        <text x="850" y="480" text-anchor="middle" class="node-sub" font-size="10">7 bloques STAR</text>
+      </g>
+
+      <!-- R3 Integrity gate (BLOCKING) -->
+      <g>
+        <rect x="916" y="428" width="100" height="64" rx="8" fill="var(--blocking-fill)" stroke="var(--blocking-line)" stroke-width="2"/>
+        <text x="966" y="450" text-anchor="middle" class="node-title" font-size="12">Router 3</text>
+        <text x="966" y="464" text-anchor="middle" class="node-sub" font-size="10.5">Integrity gate</text>
+        <text x="966" y="478" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--blocking-line)">BLOQUEANTE</text>
+      </g>
+
+      <!-- A4 Architect -->
+      <g>
+        <rect x="1032" y="428" width="100" height="64" rx="8" fill="var(--agent-fill)" stroke="var(--agent-line)" stroke-width="1.6"/>
+        <text x="1082" y="452" text-anchor="middle" class="node-title" font-size="12.5">Agente 4</text>
+        <text x="1082" y="467" text-anchor="middle" class="node-sub">Architect</text>
+        <text x="1082" y="480" text-anchor="middle" class="node-sub" font-size="10">modelo de contenido</text>
+      </g>
+
+      <!-- R4 Archetype selector -->
+      <g>
+        <rect x="1148" y="428" width="100" height="64" rx="8" fill="var(--router-fill)" stroke="var(--router-line)" stroke-width="1.4"/>
+        <text x="1198" y="450" text-anchor="middle" class="node-title" font-size="12">Router 4</text>
+        <text x="1198" y="464" text-anchor="middle" class="node-sub" font-size="10.5">Archetype selector</text>
+        <text x="1198" y="478" text-anchor="middle" class="node-sub" font-size="9.5">matriz determinista</text>
+      </g>
+
+      <!-- A5 Art director -->
+      <g>
+        <rect x="1264" y="428" width="100" height="64" rx="8" fill="var(--agent-fill)" stroke="var(--agent-line)" stroke-width="1.6"/>
+        <text x="1314" y="452" text-anchor="middle" class="node-title" font-size="12.5">Agente 5</text>
+        <text x="1314" y="467" text-anchor="middle" class="node-sub">Art director</text>
+        <text x="1314" y="480" text-anchor="middle" class="node-sub" font-size="10">tokens + type scale</text>
+      </g>
+
+      <!-- R5 Visual gate (BLOCKING) -->
+      <g>
+        <rect x="1380" y="428" width="100" height="64" rx="8" fill="var(--blocking-fill)" stroke="var(--blocking-line)" stroke-width="2"/>
+        <text x="1430" y="450" text-anchor="middle" class="node-title" font-size="12">Router 5</text>
+        <text x="1430" y="464" text-anchor="middle" class="node-sub" font-size="10.5">Visual gate</text>
+        <text x="1430" y="478" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--blocking-line)">BLOQUEANTE</text>
+      </g>
+
+      <!-- A6 Builder -->
+      <g>
+        <rect x="1496" y="428" width="100" height="64" rx="8" fill="var(--agent-fill)" stroke="var(--agent-line)" stroke-width="1.6"/>
+        <text x="1546" y="452" text-anchor="middle" class="node-title" font-size="12.5">Agente 6</text>
+        <text x="1546" y="467" text-anchor="middle" class="node-sub">Builder</text>
+        <text x="1546" y="480" text-anchor="middle" class="node-sub" font-size="10">CSS + composición</text>
+      </g>
+
+      <!-- R6 Audit planner -->
+      <g>
+        <rect x="1612" y="428" width="100" height="64" rx="8" fill="var(--router-fill)" stroke="var(--router-line)" stroke-width="1.4"/>
+        <text x="1662" y="452" text-anchor="middle" class="node-title" font-size="12.5">Router 6</text>
+        <text x="1662" y="467" text-anchor="middle" class="node-sub">Audit planner</text>
+        <text x="1662" y="480" text-anchor="middle" class="node-sub" font-size="10">delimita alcance</text>
+      </g>
+
+      <!-- A7 Auditor -->
+      <g>
+        <rect x="1728" y="428" width="100" height="64" rx="8" fill="var(--agent-fill)" stroke="var(--agent-line)" stroke-width="1.6"/>
+        <text x="1778" y="452" text-anchor="middle" class="node-title" font-size="12.5">Agente 7</text>
+        <text x="1778" y="467" text-anchor="middle" class="node-sub">Auditor</text>
+        <text x="1778" y="480" text-anchor="middle" class="node-sub" font-size="10">6 gates de calidad</text>
+      </g>
+
+      <!-- R7 Quality gate -->
+      <g>
+        <rect x="1844" y="428" width="100" height="64" rx="8" fill="var(--router-fill)" stroke="var(--router-line)" stroke-width="1.4"/>
+        <text x="1894" y="452" text-anchor="middle" class="node-title" font-size="12.5">Router 7</text>
+        <text x="1894" y="467" text-anchor="middle" class="node-sub">Quality gate</text>
+        <text x="1894" y="480" text-anchor="middle" class="node-sub" font-size="10">envía · reintenta · escala</text>
+      </g>
+
+      <!-- A8 Packager -->
+      <g>
+        <rect x="1960" y="428" width="100" height="64" rx="8" fill="var(--agent-fill)" stroke="var(--agent-line)" stroke-width="1.6"/>
+        <text x="2010" y="452" text-anchor="middle" class="node-title" font-size="12.5">Agente 8</text>
+        <text x="2010" y="467" text-anchor="middle" class="node-sub">Packager</text>
+        <text x="2010" y="480" text-anchor="middle" class="node-sub" font-size="10">documento final</text>
+      </g>
+
+      <!-- ===== Terminal: end ===== -->
+      <g>
+        <rect x="2100" y="428" width="150" height="64" rx="10" fill="var(--terminal-fill)"/>
+        <text x="2175" y="454" text-anchor="middle" fill="var(--terminal-ink)" class="node-title" font-size="13">Entrega</text>
+        <text x="2175" y="470" text-anchor="middle" fill="var(--terminal-ink)" class="node-sub" font-size="11" opacity="0.9">documento + archivos</text>
+        <text x="2175" y="484" text-anchor="middle" fill="var(--terminal-ink)" class="node-sub" font-size="10" opacity="0.75">del portafolio</text>
+      </g>
+
+    </svg>
+
+    <div class="legend">
+      <div class="item"><span class="swatch" style="background:var(--agent-fill);border:1.6px solid var(--agent-line)"></span>Agente (llama al modelo)</div>
+      <div class="item"><span class="swatch" style="background:var(--router-fill);border:1.4px solid var(--router-line)"></span>Enrutador (decisión)</div>
+      <div class="item"><span class="swatch" style="background:var(--blocking-fill);border:2px solid var(--blocking-line)"></span>Enrutador bloqueante</div>
+      <div class="item"><span class="swatch" style="background:var(--terminal-fill)"></span>Inicio / entrega</div>
+      <div class="item"><span class="swatch" style="border-top:2px dashed var(--retry)"></span>Retry local (misma fase)</div>
+      <div class="item"><span class="swatch" style="border-top:2px dashed var(--retry-blocking)"></span>Retry bloqueante</div>
+      <div class="item"><span class="swatch" style="border-top:2px dashed var(--retry-directed)"></span>Retry dirigido (Router 7 → cualquier etapa)</div>
+      <div class="item"><span class="swatch" style="border-top:2px dashed var(--escalate)"></span>Escalar al usuario</div>
+    </div>
+  </div>
+
+  <div class="below">
+    <p><strong>Cómo usar esta imagen:</strong> tomar una captura del recuadro de arriba (el div con
+    proporción carta horizontal) y pegarla en Word, o abrir este archivo en el navegador e imprimir a
+    PDF con tamaño Carta / horizontal — los estilos de impresión ya están ajustados para llenar la
+    hoja sin recortes.</p>
+    <p class="hint">Cada enrutador que dice "retry" puede reescribir <code>state.directives[stageId]</code>
+    y mover el cursor de ejecución hacia atrás; todo lo que está entre esa etapa y el final se vuelve
+    a ejecutar sobre la entrada corregida. Cada compuerta tiene un presupuesto de dos reintentos antes
+    de escalar en lenguaje llano al usuario.</p>
+  </div>
+</div>
