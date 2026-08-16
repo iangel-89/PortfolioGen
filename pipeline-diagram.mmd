@@ -1,0 +1,69 @@
+%%{init: {"flowchart": {"nodeSpacing": 24, "rankSpacing": 46, "curve": "basis"}, "theme": "base", "themeVariables": {"fontFamily": "Georgia, serif", "fontSize": "13px"}}}%%
+flowchart LR
+
+    START(["Chat interview\nAgent 0 — Interviewer"]) --> R0
+
+    subgraph P1["FASE 1 · Finding your angle"]
+        direction LR
+        R0["Router 0\nIntake gate"] --> A1["Agent 1\nStrategist"]
+        A1 --> R1{"Router 1\nStrategy gate\n(swap test)"}
+    end
+
+    subgraph P2["FASE 2 · Choosing what to show"]
+        direction LR
+        A2["Agent 2\nCurator"] --> R2{"Router 2\nEvidence gate"}
+    end
+
+    subgraph P3["FASE 3 · Writing your case studies"]
+        direction LR
+        A3["Agent 3\nNarrator"] --> R3{{"Router 3\nIntegrity gate\nBLOCKING"}}
+    end
+
+    subgraph P4["FASE 4 · Ordering it for the reader"]
+        direction LR
+        A4["Agent 4\nArchitect"] --> R4["Router 4\nArchetype selector\n(decision matrix)"]
+    end
+
+    subgraph P5["FASE 5 · Designing the look"]
+        direction LR
+        A5["Agent 5\nArt director"] --> R5{{"Router 5\nVisual gate\nBLOCKING"}}
+    end
+
+    subgraph P6["FASE 6 · Building your files"]
+        direction LR
+        A6["Agent 6\nBuilder"] --> R6["Router 6\nAudit planner"]
+    end
+
+    subgraph P7["FASE 7 · Checking everything"]
+        direction LR
+        A7["Agent 7\nAuditor"] --> R7{"Router 7\nQuality gate\n(max 2 retries)"}
+        R7 --> A8["Agent 8\nPackager"]
+    end
+
+    R1 -->|pass| A2
+    R2 -->|pass| A3
+    R3 -->|pass| A4
+    R4 -->|route| A5
+    R5 -->|pass| A6
+    R6 -->|scope| A7
+
+    R1 -.retry: swap test fails.-> A1
+    R2 -.retry: evidence trimmed.-> A2
+    R3 -.retry BLOCKING: integrity.-> A3
+    R5 -.retry BLOCKING: contrast/type.-> A5
+    R7 -.directed retry: any earlier stage, max 2x.-> A1
+
+    A8 --> DONE(["Delivery document\n+ portfolio files"])
+    R7 -.escalate after 2 rounds, plain language.-> DONE
+
+    classDef phase fill:#f4f4f2,stroke:#767c82,stroke-width:1px,color:#16181a
+    classDef agent fill:#ffffff,stroke:#1d4e6b,stroke-width:1.5px,color:#16181a
+    classDef router fill:#eef3f6,stroke:#4d5157,stroke-width:1px,color:#16181a
+    classDef blocking fill:#fbeaea,stroke:#a33,stroke-width:2px,color:#16181a
+    classDef terminal fill:#1d4e6b,stroke:#1d4e6b,stroke-width:1px,color:#ffffff
+
+    class A1,A2,A3,A4,A5,A6,A7,A8 agent
+    class R0,R1,R2,R4,R6,R7 router
+    class R3,R5 blocking
+    class START,DONE terminal
+    class P1,P2,P3,P4,P5,P6,P7 phase
